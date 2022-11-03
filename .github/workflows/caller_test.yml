@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      branch:
+      inspect-branch:
         required: true
         type: string
 
@@ -15,4 +15,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-          BRANCH: ${{ inputs.branch }}
+          BRANCH: ${{ inputs.inspect-branch }}
