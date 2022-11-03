@@ -1,0 +1,18 @@
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+
+jobs:
+  test-access-to-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest commit from specified owner/repo/branch
+        run:  gh api repos/${OWNER}/${REPO}/commits/ -q '(.sha + "\t" +.commit.message)'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          BRANCH: ${{ inputs.branch }}
