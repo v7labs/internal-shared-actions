@@ -22,7 +22,7 @@ jobs:
 
       - name: Do the tagging
         if: contains(env.FOUND_COMMIT, env.COMMIT_SHA )
-        run: echo "About to apply tag $TAG to $COMMIT_SHA"
+        run: echo "About to apply tag $TAG to $FOUND_COMMIT"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ inputs.commit_sha }}
