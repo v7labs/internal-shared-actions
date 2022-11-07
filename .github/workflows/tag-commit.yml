@@ -15,7 +15,7 @@ jobs:
       - name: Check for the existence of the commit
         run: |
           COMMIT_PATH="repos/$OWNER/$REPO/commits/$COMMIT_SHA"
-          echo "Checking existence of $COMMIT_PATH"
+          echo "Checking existence of \"$COMMIT_PATH\""
           gh api "$COMMIT_PATH"  -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,11 +23,19 @@ jobs:
           REPO: ${{ github.event.repository.name }}
           COMMIT_SHA: ${{ inputs.commit_sha }}
 
-      - name: Do the tagging
+      - name: Prepare to tag
         if: contains(env.FOUND_COMMIT, env.COMMIT_SHA )
-        run: echo "About to apply tag $TAG to $FOUND_COMMIT"
+        run: |
+          echo "continue_job=true" >> $GITHUB_ENV
+          echo "About to apply tag $TAG to $FOUND_COMMIT"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_SHA: ${{ inputs.commit_sha }}
           TAG: ${{ inputs.tag }}
 
+      - name: Do the tag
+        if: env.continue_job
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_sha: ${{ inputs.commit_sha }}
+          custom_tag: ${{ inputs.tag }}
