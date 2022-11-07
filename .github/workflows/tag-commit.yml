@@ -12,8 +12,11 @@ jobs:
   tag-commit:
     runs-on: ubuntu-latest
     steps:
-      - name: Check for the existence of the comment
-        run: gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
+      - name: Check for the existence of the commit
+        run:
+          COMMIT_PATH="repos/$OWNER/$REPO/commits/$COMMIT_SHA"
+          echo "Checking existence of $COMMIT_PATH"
+          gh api "$COMMIT_PATH"  -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
