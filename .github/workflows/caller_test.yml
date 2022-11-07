@@ -9,7 +9,7 @@ jobs:
   test-access-to-repo:
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest commit from specified owner/repo/branch
+      - name: Get latest commit from calling owner/repo and specified branch
         run:  gh api repos/$OWNER/$REPO/commits/$BRANCH -q '(.sha + "\t" +.commit.message)'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
