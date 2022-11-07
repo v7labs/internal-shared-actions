@@ -9,22 +9,23 @@ on:
         type: string
 
 jobs:
-  test-access-to-repo:
+  tag-commit:
     runs-on: ubuntu-latest
     steps:
       - name: Check for the existence of the comment
-        run: |
-          FOUND_COMMIT=$(gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA -q '(.sha + "\t" +.commit.message)')
-          if [ -z "$FOUND_COMMIT"]
-          then
-              echo "commit_sha $COMMIT_SHA not found in $OWNER/$REPO"
-              echo "result=failed" >> $GITHUB_ENV
-              exit 1
-          fi
-          echo "Found $FOUND_COMMIT"
-
+        run: gh api repos/$OWNER/$REPO/commits/$COMMIT_SHA -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
           COMMIT_SHA: ${{ inputs.commit_sha }}
+
+      - name: Do the tagging
+        if: contains(env.FOUND_COMMIT, env.COMMIT_SHA )
+        run: echo "About to tag $COMMIT_SHA with $TAG"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMIT_SHA: ${{ inputs.commit_sha }}
+          TAG: ${{ inputs.tag }}
+
+
