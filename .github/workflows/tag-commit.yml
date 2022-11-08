@@ -39,3 +39,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_sha: ${{ inputs.commit_sha }}
           custom_tag: ${{ inputs.tag }}
+          tag_prefix: ""
