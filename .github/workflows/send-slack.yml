@@ -1,0 +1,27 @@
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Channel name (no #)'
+        default: 'engineering-bots'
+        required: true
+        type: string
+      message:
+        description: 'Arbitrary message'
+        required: true
+        type: string
+
+jobs:
+  send-slack:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: ${{ inputs.channel }}
+        # SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+        # SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_MESSAGE: ${{ inputs.message }}
+        # SLACK_TITLE: Post Title
+        # SLACK_USERNAME: rtCamp
+      SLACK_WEBHOOK: ${{ secrets.SLACK_ENG_BOT_WEBHOOK }}
