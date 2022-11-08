@@ -20,8 +20,8 @@ jobs:
       env:
         SLACK_CHANNEL: ${{ inputs.channel }}
         # SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
-        # SLACK_ICON: https://github.com/rtCamp.png?size=48
+        SLACK_ICON: https://emoji.slack-edge.com/T0C5EMBH7/eng-bot/054865155c4c04f1.png
         SLACK_MESSAGE: ${{ inputs.message }}
-        # SLACK_TITLE: Post Title
-        # SLACK_USERNAME: rtCamp
+        SLACK_TITLE: Update from eng-bot
+        SLACK_USERNAME: eng-bot
         SLACK_WEBHOOK: ${{ secrets.SLACK_ENG_BOT_WEBHOOK }}
