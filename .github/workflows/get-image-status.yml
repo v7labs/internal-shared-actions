@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+    inputs:
+      ecr_repo:
+        default: 'darwin-frontend'
+        required: true
+        type: choice
+        options:
+          - darwin-backend
+          - darwin-frontend
+          - wind
+          - busybee
+
+# inspects ecr and returns the hashes of the images tagged with latest, prod and dev
+
+jobs:
+  tag-commit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        status_tags:
+          - latest
+          - prod
+          - dev
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Deploy on ECS
+        run: aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{matrix.status_tags}}" --output "text"
+
+
+
+
