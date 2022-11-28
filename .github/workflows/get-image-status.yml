@@ -15,7 +15,6 @@ jobs:
         status_tags:
           - latest
           - prod
-          - dev
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -24,8 +23,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Deploy on ECS
-        run: aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text"
+      - name: Get the image tag for
+        run: |
+          echo 'Retrieving image for tag ${{ matrix.status_tags }} from ${{ inputs.ecr_repo }} and getting commit hash tag'
+
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep "IMAGETAGS" | grep -v "${{ matrix.status_tags }}"
 
 
 
