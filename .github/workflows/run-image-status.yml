@@ -13,7 +13,7 @@ on:
 
 jobs:
   caller:
-    uses: v7labs/internal-shared-actions/.github/workflows/get-image-status.yml
+    uses: v7labs/internal-shared-actions/.github/workflows/get-image-status.yml@main
     with:
       ecr_repo: ${{ inputs.ecr_repo }}
     secrets: inherit
