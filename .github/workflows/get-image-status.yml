@@ -30,13 +30,15 @@ jobs:
         id: get-hash
         run: |
           echo 'Retrieving image for tag "${{ matrix.status_tags }}" from "${{ inputs.ecr_repo }}" and getting commit hash tag using awk'
-          echo 'commit-hash-${{ matrix.status_tags }}<<EOF' >> $GITHUB_OUTPUT
-          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep --color=never -E '^IMAGETAGS\s*[[:xdigit:]]{40}' | awk '{print $2}' >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          echo 'COMMIT_HASH<<EOF' >> $GITHUB_ENV
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep --color=never -E '^IMAGETAGS\s*[[:xdigit:]]{40}' | awk '{print $2}' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
 
-      - name: show output
-        run: cat "$GITHUB_OUTPUT"
+      - name: set output
+        run: |
+          echo "$COMMIT_HASH"
+          echo "::set-output name=commit-hash-${{ matrix.status_tag }}::${{env.COMMIT_HASH}}"
 
 
 
