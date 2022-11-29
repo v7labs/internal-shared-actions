@@ -25,9 +25,8 @@ jobs:
 
       - name: Get the image tag for
         run: |
-          echo 'Retrieving image for tag ${{ matrix.status_tags }} from ${{ inputs.ecr_repo }} and getting commit hash tag'
-
-          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep "IMAGETAGS" | grep -v "${{ matrix.status_tags }}"
+          echo 'Retrieving image for tag "${{ matrix.status_tags }}" from "${{ inputs.ecr_repo }}" and getting commit hash tag using awk'
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | awk '/IMAGETAGS/ && !/prod/ && !/latest/'
 
 
 
