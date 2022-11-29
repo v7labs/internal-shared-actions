@@ -35,6 +35,8 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
 
+      - name: show output
+        run: cat "$GITHUB_OUTPUT"
 
 
 
