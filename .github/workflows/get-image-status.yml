@@ -27,7 +27,7 @@ jobs:
         run: |
           echo 'Retrieving image for tag "${{ matrix.status_tags }}" from "${{ inputs.ecr_repo }}" and getting commit hash tag using awk'
 
-          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | | grep --color=never -E "^IMAGETAGS\s*[[:xdigit:]]{40}"
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep --color=never -E "^IMAGETAGS\s*[[:xdigit:]]{40}"
 
 
 
