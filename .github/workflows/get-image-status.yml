@@ -23,7 +23,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Get the image tag for
+      - name: Get the image tag for matrix.status_tag
         run: |
           echo 'Retrieving image for tag "${{ matrix.status_tags }}" from "${{ inputs.ecr_repo }}" and getting commit hash tag using awk'
 
