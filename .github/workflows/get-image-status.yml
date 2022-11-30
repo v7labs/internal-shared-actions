@@ -10,14 +10,9 @@ on:
 jobs:
   get-image-status:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        status_tags:
-          - latest
-          - prod
     outputs:
-      commit-hash-prod: ${{ steps.get-hash.outputs.commit-hash-prod }}
-      commit-hash-latest: ${{ steps.get-hash.outputs.commit-hash-latest }}
+      commit-hash-prod: ${{ steps.get-prod.outputs.commit-hash }}
+      commit-hash-latest: ${{ steps.get-latest.outputs.commit-hash }}
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
@@ -26,19 +21,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
-      - name: Get the image tag for matrix.status_tag
-        id: get-hash
+            # in theory doing this with a matrix would save copy/pasta
+            # however returning values from matrix steps is hard.
+      - name: Get the image tag for prod
+        id: get-prod
         run: |
-          echo 'Retrieving image for tag "${{ matrix.status_tags }}" from "${{ inputs.ecr_repo }}" and getting commit hash tag using awk'
-          echo 'COMMIT_HASH<<EOF' >> $GITHUB_ENV
-          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=${{ matrix.status_tags }}" --output "text" | grep --color=never -E '^IMAGETAGS\s*[[:xdigit:]]{40}' | awk '{print $2}' >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          echo 'commit-hash<<EOF' >> $GITHUB_OUTPUT
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=prod" --output "text" | grep --color=never -E '^IMAGETAGS\s*[[:xdigit:]]{40}' | awk '{print $2}' >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
-
-      - name: set output
+      - name: Get the image tag for latest
+        id: get-latest
         run: |
-          echo "$COMMIT_HASH"
-          echo "commit-hash-${{ matrix.status_tag }}=${{env.COMMIT_HASH}}" >> $GITHUB_OUTPUT
+          echo 'commit-hash<<EOF' >> $GITHUB_OUTPUT
+          aws ecr describe-images --repository-name "${{ inputs.ecr_repo }}" --image-ids "imageTag=latest" --output "text" | grep --color=never -E '^IMAGETAGS\s*[[:xdigit:]]{40}' | awk '{print $2}' >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
 
 
