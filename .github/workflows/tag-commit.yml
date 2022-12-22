@@ -49,6 +49,6 @@ jobs:
           gh api -X POST "$API_ENDPOINT" \
             -f "owner=$OWNER" \
             -f "repo=$REPO" \
-            -f "ref=refs/heads/$TAG" \
+            -f "ref=refs/tags/$TAG" \
             -f "sha=$COMMIT_SHA"
 
