@@ -34,7 +34,7 @@ jobs:
         run: |
           COMMIT_PATH="repos/$OWNER/$REPO/commits/$COMMIT_SHA"
           echo "Checking existence of \"$COMMIT_PATH\""
-          gh api "$COMMIT_PATH"  -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
+          gh api "$COMMIT_PATH"  -q '("FOUND_COMMIT=\"" + .sha + "\"")' >> $GITHUB_ENV
 
       - name: Prepare to tag
         if: contains(env.FOUND_COMMIT, env.COMMIT_SHA )
@@ -49,7 +49,6 @@ jobs:
         run: |
           API_ENDPOINT="repos/$OWNER/$REPO/git/tags"
 
-          echo "Adding tag for \n$REQUEST_BODY"
           gh api -X POST "$API_ENDPOINT" \
             -f "owner=$OWNER" \
             -f "repo=$REPO" \
