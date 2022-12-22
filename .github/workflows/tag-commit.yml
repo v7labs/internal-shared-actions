@@ -48,19 +48,14 @@ jobs:
         if: env.continue_job
         run: |
           API_ENDPOINT="repos/$OWNER/$REPO/git/tags"
-          REQUEST_BODY=$(cat << EOF
-          {
-            "owner": "$OWNER",
-            "repo": "$REPO",
-            "tag": "$TAG",
-            "message": "$TAG_MESSAGE",
-            "object": "$COMMIT_SHA",
-            type"": "commit"
-            }
-          }
 
-          EOF
-          )
           echo "Adding tag for \n$REQUEST_BODY"
-          gh api -X POST "$API_ENDPOINT" --body "$REQUEST_BODY"
+          gh api -X POST "$API_ENDPOINT" \
+            -f "owner=$OWNER" \
+            -f "repo=$REPO" \
+            -f "tag=$TAG" \
+            -f "message=\"$TAG_MESSAGE\"" \
+            -f "object=$COMMIT_SHA" \
+            -f "type=commit"
+
 
