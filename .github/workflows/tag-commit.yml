@@ -62,5 +62,5 @@ jobs:
           EOF
           )
           echo "Adding tag for \n$REQUEST_BODY"
-          gh api -x POST "$API_ENDPOINT" --body "$REQUEST_BODY"
+          gh api -X POST "$API_ENDPOINT" --body "$REQUEST_BODY"
 
