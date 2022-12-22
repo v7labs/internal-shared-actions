@@ -7,21 +7,58 @@ on:
       tag:
         required: true
         type: string
+      tag_message:
+        required: true
+        type: string
+      repository_name:
+        required: true
+        type: string
+      repository_owner:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: The commit hash to be tagged
+        required: true
+        type: string
+      tag:
+        description: The tag label
+        required: true
+        type: string
+      repository_name:
+        description: Which repository does the commit live in?
+        required: true
+        type: choice
+        options:
+          - darwin-frontend
+          - darwin-backend
+          - busybee
+          - wind
+          - darwin-deploy
+      repository_owner:
+        description: The org. Probably v7labs
+        required: true
+        type: string
+        default: v7labs
 
 jobs:
   tag-commit:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ inputs.repository_owner }}
+      REPO: ${{ inputs.repository_name }}
+      COMMIT_SHA: ${{ inputs.commit_sha }}
+      TAG: ${{ inputs.tag }}
+      TAG_MESSAGE: ${{ inputs.tag_message }}
+
     steps:
       - name: Check for the existence of the commit
         run: |
           COMMIT_PATH="repos/$OWNER/$REPO/commits/$COMMIT_SHA"
           echo "Checking existence of \"$COMMIT_PATH\""
           gh api "$COMMIT_PATH"  -q '("FOUND_COMMIT=\"" + .sha + " " +.commit.message +"\"")' >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
-          COMMIT_SHA: ${{ inputs.commit_sha }}
 
       - name: Prepare to tag
         if: contains(env.FOUND_COMMIT, env.COMMIT_SHA )
@@ -30,13 +67,24 @@ jobs:
           echo "About to apply tag $TAG to $FOUND_COMMIT"
         env:
           COMMIT_SHA: ${{ inputs.commit_sha }}
-          TAG: ${{ inputs.tag }}
 
       - name: Do the tag
         if: env.continue_job
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          commit_sha: ${{ inputs.commit_sha }}
-          custom_tag: ${{ inputs.tag }}
-          tag_prefix: ""
+        run: |
+          API_ENDPOINT="repos/$OWNER/$REPO/git/tags"
+          REQUEST_BODY=$(cat << EOF
+          {
+            "owner": "$OWNER",
+            "repo": "$REPO",
+            "tag": "$TAG",
+            "message": "$TAG_MESSAGE",
+            "object": "$COMMIT_SHA",
+            type"": "commit"
+            }
+          }
+
+          EOF
+          )
+          echo "Adding tag for \n$REQUEST_BODY"
+          gh api -x POST "$API_ENDPOINT" --body "$REQUEST_BODY"
+
