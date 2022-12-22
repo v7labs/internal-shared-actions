@@ -16,31 +16,7 @@ on:
       repository_owner:
         required: true
         type: string
-  workflow_dispatch:
-    inputs:
-      commit_sha:
-        description: The commit hash to be tagged
-        required: true
-        type: string
-      tag:
-        description: The tag label
-        required: true
-        type: string
-      repository_name:
-        description: Which repository does the commit live in?
-        required: true
-        type: choice
-        options:
-          - darwin-frontend
-          - darwin-backend
-          - busybee
-          - wind
-          - darwin-deploy
-      repository_owner:
-        description: The org. Probably v7labs
-        required: true
-        type: string
-        default: v7labs
+
 
 jobs:
   tag-commit:
