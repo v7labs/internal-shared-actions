@@ -7,9 +7,6 @@ on:
       tag:
         required: true
         type: string
-      tag_message:
-        required: true
-        type: string
       repository_name:
         required: true
         type: string
@@ -47,14 +44,11 @@ jobs:
       - name: Do the tag
         if: env.continue_job
         run: |
-          API_ENDPOINT="repos/$OWNER/$REPO/git/tags"
+          API_ENDPOINT="repos/$OWNER/$REPO/git/refs"
 
           gh api -X POST "$API_ENDPOINT" \
             -f "owner=$OWNER" \
             -f "repo=$REPO" \
-            -f "tag=$TAG" \
-            -f "message=\"$TAG_MESSAGE\"" \
-            -f "object=$COMMIT_SHA" \
-            -f "type=commit"
-
+            -f "ref=/refs/heads/$TAG" \
+            -f "sha=$COMMIT_SHA"
 
